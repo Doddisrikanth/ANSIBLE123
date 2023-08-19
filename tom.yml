@@ -2,7 +2,6 @@
   hosts: all 
   become: yes 
   vars:
-    tom_version: 10.1.12 
     java_package_name: openjdk-11-jdk
     user_name: tomcat 
     group_name: tomcat 

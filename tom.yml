@@ -4,7 +4,7 @@
   become: yes 
   vars:
     java_package_name: openjdk-11-jdk
-    ser_name: tomcat 
+    user_name: tomcat 
     group_name: tomcat 
     user_home: /opt/tomcat
     user_shell: /bin/fales

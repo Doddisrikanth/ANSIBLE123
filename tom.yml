@@ -20,15 +20,15 @@
         state: present
     - name: install tomcat
       ansible.builtin.get_url:
-        url: https://dlcdn.apache.org/tomcat/tomcat-10/v10.1.11/bin/apache-tomcat-10.1.11.tar.gz
+        url: https://downloads.apache.org/tomcat/tomcat-10/v10.1.12/bin/apache-tomcat-10.1.12.tar.gz.sha512
         dest: /tmp
     - name: unzip tomcat
       ansible.builtin.unarchive:
-        src: /tmp/apache-tomcat-10.1.11.tar.gz
+        src: /tmp/apache-tomcat-10.1.12.tar.gz
         dest: /opt/tomcat/ 
     - name: create symbolic link
       ansible.builtin.file:
-        src: /opt/tomcat/apache-tomcat-10.1.11
+        src: /opt/tomcat/apache-tomcat-10.1.12
         dest: /opt/tomcat/latest
         state: link 
     - name: change ownr permission

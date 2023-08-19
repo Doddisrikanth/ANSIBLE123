@@ -1,9 +1,9 @@
-- name: install tomcat9
+- name: install tomcat 10
   hosts: all 
   become: yes 
   vars:
     java_package_name: openjdk-11-jdk
-    user_name: tomcat 
+    ser_name: tomcat 
     group_name: tomcat 
     user_home: /opt/tomcat
     user_shell: /bin/bash
@@ -27,11 +27,11 @@
       ansible.builtin.group:
         name: {{ group_name }} 
         state: present
-    - name: unzip tomcat
-      ansible.builtin.unarchive:
-        src: "https://downloads.apache.org/tomcat/tomcat-{{ tomcat_major_version }}/v{{ tomcat_version}}/bin/apache-tomcat-{{ tomcat_version}}.tar.gz"
-        dest: {{ user_home }} 
-        remote_src: yes
+    -  name: unzip tomcat
+       ansible.builtin.unarchive:
+         src: "https://downloads.apache.org/tomcat/tomcat-{{ tomcat_major_version }}/v{{ tomcat_version}}/bin/apache-tomcat-{{ tomcat_version}}.tar.gz"
+         dest: {{ user_home }} 
+         remote_src: yes
     - name: create symbolic link
       ansible.builtin.file:
         src: "{{ user_home }}/apache-tomcat-{{ tomcat_version}}"

@@ -1,3 +1,4 @@
+--- 
 - name: install tomcat 10
   hosts: all 
   become: yes 

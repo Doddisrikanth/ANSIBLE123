@@ -1,75 +1,85 @@
 - name: install tomcat9
   hosts: all 
   become: yes 
+  vars:
+    tom_version: 10.1.12 
+    java_package_name: openjdk-11-jdk
+    user_name: tomcat 
+    group_name: tomcat 
+    user_home: /opt/tomcat
+    user_shell: /bin/bash
+    tomcat_version: "10.1.12"
+    tomcat_major_version: "10"
+    tomcat_service_name: tomcat.service
   tasks:
     - name: install java
       ansible.builtin.apt:
-        name: openjdk-11-jdk
+        name: {{ java_package_name }}
         state: present
         update_cache: true
     - name: create user 
       ansible.builtin.user:
         create_home: yes
-        name: tomcat
-        shell: /bin/bash
-        home: /opt/tomcat
+        name: {{ user_name }}
+        shell: {{ user_shell}}
+        home: {{ user_home }}
         state: present
     - name: create group
       ansible.builtin.group:
-        name: tomcat 
+        name: {{ group_name }} 
         state: present
     - name: unzip tomcat
       ansible.builtin.unarchive:
-        src: https://downloads.apache.org/tomcat/tomcat-10/v10.1.12/bin/apache-tomcat-10.1.12.tar.gz
-        dest: /opt/tomcat/ 
+        src: "https://downloads.apache.org/tomcat/tomcat-{{ tomcat_major_version }}/v{{ tomcat_version}}/bin/apache-tomcat-{{ tomcat_version}}.tar.gz"
+        dest: {{ user_home }} 
         remote_src: yes
     - name: create symbolic link
       ansible.builtin.file:
-        src: /opt/tomcat/apache-tomcat-10.1.12
-        dest: /opt/tomcat/latest
+        src: "{{ user_home }}/apache-tomcat-{{ tomcat_version}}"
+        dest: "{{ user_home }}/latest"
         state: link 
     - name: change ownr permission
       ansible.builtin.file:
-        dest: /opt/tomcat 
-        owner: tomcat 
-        group: tomcat 
+        dest: {{ user_home }} 
+        owner: {{ user_name }}
+        group: {{ group_name }}
         recurse: true 
         state: directory 
     - name: shell command
-      ansible.builtin.command: sudo sh -c 'chmod +x /opt/tomcat/latest/bin/*.sh'
+      ansible.builtin.command: "sudo sh -c 'chmod +x {{ user_home }}/latest/bin/*.sh'"
     - name: copy contant
       ansible.builtin.copy:
-        src: tomcat.service
-        dest: /etc/systemd/system/tomcat.service
-        owner: tomcat 
-        group: tomcat 
+        src: {{ tomcat_service_name }}
+        dest: "/etc/systemd/system/{{ tomcat_service_name }}"
+        owner: {{ user_name }} 
+        group: {{ group_name }} 
     - name: systemd reload deman 
       ansible.builtin.systemd:
-        name: tomcat.service
+        name: {{ tomcat_service_name }}
         daemon_reload: yes 
         enabled: yes 
         state: started
     - name: copy user xml file
       ansible.builtin.copy:
         src: tomcat-users.xml
-        dest: /opt/tomcat/latest/conf/tomcat-users.xml
-        owner: tomcat
-        group: tomcat
+        dest: "{{ user_home }}/latest/conf/tomcat-users.xml"
+        owner: {{ user_name }}
+        group: {{ group_name }}
     - name: copy the context.xml file
       ansible.builtin.copy:
         src: context.xml
-        dest: /opt/tomcat/latest/webapps/manager/META-INF/context.xml
-        owner: tomcat
-        group: tomcat
+        dest: "{{ user_home }}/latest/webapps/manager/META-INF/context.xml"
+        owner: {{ user_name }}
+        group: {{ group_name }}
     - name: copy the host manager-context.xml file
       ansible.builtin.copy:
         src: hostmanager-context.xml
-        dest: /opt/tomcat/latest/webapps/host-manager/META-INF/context.xml
-        owner: tomcat
-        group: tomcat
+        dest: "{{ user_home }}/latest/webapps/host-manager/META-INF/context.xml"
+        owner: {{ user_name }}
+        group: {{ group_name }}
     - name: restart
       ansible.builtin.systemd_service:
-        name: tomcat.service
+        name: {{ tomcat_service_name }}
         state: restarted
 
 
